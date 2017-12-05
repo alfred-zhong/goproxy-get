@@ -67,14 +67,6 @@ func main() {
 	git.Config("http.proxy", fmt.Sprintf("http://%s", *proxy), true)
 	git.Config("https.proxy", fmt.Sprintf("https://%s", *proxy), true)
 
-	defer func() {
-		os.Unsetenv("http_proxy")
-		os.Unsetenv("https_proxy")
-
-		git.Unset("http.proxy", true)
-		git.Unset("https.proxy", true)
-	}()
-
 	// run "go get ..."
 	arg := []string{"get"}
 	arg = append(arg, ggArgs.parseArgs()...)
@@ -85,4 +77,12 @@ func main() {
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintf(os.Stderr, "run go get fail: %v", err)
 	}
+
+	// unset the proxy env after "go get ..."
+	os.Unsetenv("http_proxy")
+	os.Unsetenv("https_proxy")
+	git.Unset("http.proxy", true)
+	git.Unset("https.proxy", true)
+	git.RemoveSectionIfEmpty("http")
+	git.RemoveSectionIfEmpty("https")
 }

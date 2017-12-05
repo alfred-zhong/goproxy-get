@@ -1,6 +1,8 @@
 package git
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestConfig(t *testing.T) {
 	type args struct {
@@ -44,5 +46,19 @@ func TestUnset(t *testing.T) {
 				t.Errorf("Unset() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
+	}
+}
+
+func TestListNameOnly(t *testing.T) {
+	names, err := ListNameOnly(true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log(names)
+}
+
+func TestRemoveSectionIfEmpty(t *testing.T) {
+	if err := RemoveSectionIfEmpty("https"); err != nil {
+		t.Error(err)
 	}
 }
