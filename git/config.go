@@ -1,13 +1,13 @@
 package git
 
 import (
-	"strings"
-	"io"
 	"bufio"
 	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 // Config set the git config key with value. If global is true, git config will
@@ -71,7 +71,7 @@ func ListNameOnly(global bool) ([]string, error) {
 	if err != nil {
 		return nil, fmt.Errorf("git config list name only fail: %v", err)
 	}
-	
+
 	reader := bufio.NewReader(bytes.NewReader(b))
 	names := []string{}
 	for {
