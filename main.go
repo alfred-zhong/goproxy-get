@@ -9,52 +9,37 @@ import (
 	"github.com/alfred-zhong/goproxy-get/git"
 )
 
-type goGetArgs struct {
-	d        bool
-	f        bool
-	fix      bool
-	insecure bool
-	t        bool
-	u        bool
-	v        bool
+type goGetArgs []struct {
+	value bool
+	name  string
+	desc  string
 }
 
 func (args goGetArgs) parseArgs() []string {
 	result := []string{}
-	if args.d {
-		result = append(result, "-d")
-	}
-	if args.f {
-		result = append(result, "-f")
-	}
-	if args.fix {
-		result = append(result, "-fix")
-	}
-	if args.insecure {
-		result = append(result, "-insecure")
-	}
-	if args.t {
-		result = append(result, "-t")
-	}
-	if args.u {
-		result = append(result, "-u")
-	}
-	if args.v {
-		result = append(result, "-v")
+	for _, arg := range args {
+		if arg.value {
+			result = append(result, "-"+arg.name)
+		}
 	}
 
 	return result
 }
 
+var ggArgs = goGetArgs{
+	{false, "d", "Stop after downloading the packages; that is,it instructs get not to install the packages."},
+	{false, "f", "Valid only when -u is set, forces get -u not to verify that each package has been checked out from the source control repository implied by its import path."},
+	{false, "fix", "Run the fix tool on the downloaded packages before resolving dependencies or building the code."},
+	{false, "insecure", "Permits fetching from repositories and resolving custom domains using insecure schemes such as HTTP. Use with caution"},
+	{false, "t", "Also download the packages required to build the tests for the specified packages."},
+	{false, "u", "Use the network to update the named packages and their dependencies. By default, get uses the network to check out missing packages but does not use it to look for updates to existing packages."},
+	{false, "v", "Enables verbose progress and debug output."},
+}
+
 func main() {
-	ggArgs := new(goGetArgs)
-	flag.BoolVar(&ggArgs.d, "d", false, "Stop after downloading the packages; that is,it instructs get not to install the packages.")
-	flag.BoolVar(&ggArgs.f, "f", false, "Valid only when -u is set, forces get -u not to verify that each package has been checked out from the source control repository implied by its import path.")
-	flag.BoolVar(&ggArgs.fix, "fix", false, "Run the fix tool on the downloaded packages before resolving dependencies or building the code.")
-	flag.BoolVar(&ggArgs.insecure, "insecure", false, "Permits fetching from repositories and resolving custom domains using insecure schemes such as HTTP. Use with caution")
-	flag.BoolVar(&ggArgs.t, "t", false, "Also download the packages required to build the tests for the specified packages.")
-	flag.BoolVar(&ggArgs.u, "u", false, "Use the network to update the named packages and their dependencies. By default, get uses the network to check out missing packages but does not use it to look for updates to existing packages.")
-	flag.BoolVar(&ggArgs.v, "v", false, "Enables verbose progress and debug output.")
+	for i := range ggArgs {
+		flag.BoolVar(&ggArgs[i].value, ggArgs[i].name, ggArgs[i].value, ggArgs[i].desc)
+	}
 
 	proxy := flag.String("p", "127.0.0.1:1087", "proxy address:port to use")
 	flag.Parse()
